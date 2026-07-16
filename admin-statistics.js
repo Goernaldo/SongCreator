@@ -33,7 +33,7 @@
       songCreator: { defaultLength: 'mittel', selectionLimit: 5, activeCategories: [], promptRules: '', lyricsRules: '', templates: [], mode: 'standard' },
       coverCreator: { styles: [], resolution: '1024x1024', promptRules: '', colors: [], logos: [], watermark: '', templates: [] },
       ai: { enabled: false, provider: '', model: '', temperature: 0.7, tokenLimit: 2000, systemPrompt: '' },
-      shop: { currency: 'EUR', monthlyPrice: 4.99, yearlyPrice: 49.99, trialDays: 29, yearlySavingsText: true, shopEnabled: false, monthlyEnabled: true, yearlyEnabled: true, benefits: ['Unbegrenzte Themen','Bis zu 5 Genres','Bis zu 5 Vocals','Bis zu 5 Stimmungen','Premium Prompt-Pakete','Zukünftige KI-Funktionen','Premium Cover'], description: 'Mehr Freiheit für deine Musik.', promotionalPrice: null, discountPercent: 0, promotionStart: '', promotionEnd: '', coupons: [], discounts: [], stripePlaceholder: '', paypalPlaceholder: '', invoiceStatus: 'vorbereitet', subscriptionStatus: 'inaktiv' },
+      shop: { currency: 'EUR', monthlyPrice: 9.99, yearlyPrice: 89.99, monthlyTrialDays: 3, yearlyTrialDays: 7, yearlySavingsText: true, shopEnabled: false, monthlyEnabled: true, yearlyEnabled: true, benefits: ['Unbegrenzte Themen','Bis zu 5 Genres','Bis zu 5 Vocals','Bis zu 5 Stimmungen','Premium Prompt-Pakete','Zukünftige KI-Funktionen','Premium Cover'], description: 'Mehr Freiheit für deine Musik.', promotionalPrice: null, discountPercent: 0, promotionStart: '', promotionEnd: '', coupons: [], discounts: [], stripePlaceholder: '', paypalPlaceholder: '', invoiceStatus: 'vorbereitet', subscriptionStatus: 'inaktiv' },
       settings: { title: 'Song Creator', logo: '', favicon: '', primaryColor: '#21e6ff', accentColor: '#ff3cac', font: 'system-ui', footer: '', contact: '', social: '', language: 'de', appVersion: '1.0.0' },
       counters: { songs: 0, covers: 0 }, activity: { popularThemes: [], popularGenres: [], lastLogins: [] }
     };
@@ -77,11 +77,14 @@
     if (existing && existing.version) {
       const base = defaults(), merged = Object.assign(base, existing);
       merged.shop = Object.assign(base.shop, existing.shop || {});
+      if ((existing.version || 1) < 3 && Number(merged.shop.monthlyPrice) === 4.99 && Number(merged.shop.yearlyPrice) === 49.99 && Number(merged.shop.trialDays) === 29) Object.assign(merged.shop,{ monthlyPrice:9.99, yearlyPrice:89.99, trialDays:3 });
+      if (existing.shop?.monthlyTrialDays == null) merged.shop.monthlyTrialDays = Number(existing.shop?.trialDays ?? 3);
+      if (existing.shop?.yearlyTrialDays == null) merged.shop.yearlyTrialDays = Number(existing.shop?.trialDays) === 3 ? 7 : Number(existing.shop?.trialDays ?? 7);
       merged.premium = Object.assign(base.premium, existing.premium || {});
       const migrationBackupKey = 'songCreator.adminControl.userSchemaBackup.v1';
       if (localStorage.getItem(migrationBackupKey) === null) localStorage.setItem(migrationBackupKey, JSON.stringify({ timestamp: now(), source: existing }));
       merged.users = (existing.users || []).map(normalizeUser);
-      merged.version = 2;
+      merged.version = 4;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
       return merged;
     }

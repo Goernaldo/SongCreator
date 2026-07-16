@@ -1,1 +1,1 @@
-(function(){'use strict';window.AdminShop=Object.freeze({get:()=>AdminCore.snapshot().shop,save:value=>AdminCore.setSection('shop',value)});}());
+(function(){'use strict';window.AdminRoles=Object.freeze({list:()=>AdminCore.snapshot().roles,permissions:AdminCore.PERMISSIONS,create:AdminCore.createRole,update:AdminCore.updateRole,remove:AdminCore.removeRole,can:AdminCore.hasPermission});}());
