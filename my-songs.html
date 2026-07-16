@@ -7,7 +7,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Passwort vergessen - Song Creator Studio</title>
+  <title>Meine Songs - Song Creator Studio</title>
 
   <link
     rel="stylesheet"
@@ -18,91 +18,154 @@
 
 <body>
 
-  <div class="container auth-container">
+<div class="container">
 
-    <!-- Logo -->
+  <!-- Logo -->
 
-    <div class="logo-box">
-      <img
-        src="assets/logo.png"
-        alt="GB Logo"
-        class="logo auth-logo"
-      >
-    </div>
-
-    <!-- Titel -->
-
-    <h1>Passwort vergessen</h1>
-
-    <p class="subtitle">
-      Gib deine E-Mail-Adresse ein, um dein Passwort zurückzusetzen.
-    </p>
-
-    <!-- Karte -->
-
-    <div class="auth-card">
-
-      <div class="input-group">
-
-        <label>
-          E-Mail-Adresse
-        </label>
-
-        <input
-          type="email"
-          id="resetEmail"
-          placeholder="deine@email.de"
-        >
-
-      </div>
-
-      <!-- Button -->
-
-      <button
-        class="main-btn"
-        onclick="sendResetCode()"
-      >
-        📧 Code senden
-      </button>
-
-      <!-- Links -->
-
-      <div class="login-links">
-
-        <a href="login.html">
-          ← Zurück zum Login
-        </a>
-
-        <a href="register.html">
-          Noch keinen Account?
-          Jetzt registrieren
-        </a>
-
-      </div>
-
-    </div>
-
-    <!-- Zurück -->
-
-    <p
-      style="
-      margin-top:30px;
-      "
+  <div class="logo-box">
+    <img
+      src="assets/logo.png"
+      alt="GB Logo"
+      class="logo auth-logo"
     >
-      <a
-        href="index.html"
-        style="
-        color:#b6c2d1;
-        text-decoration:none;
-        "
+  </div>
+
+  <!-- Titel -->
+
+  <h1>Meine Songs</h1>
+
+  <p class="subtitle">
+    Hier findest du deine erstellten Songs.
+  </p>
+
+  <!-- Suche -->
+
+  <div class="auth-card">
+
+    <div class="input-group">
+
+      <label>Suche</label>
+
+      <input
+        type="text"
+        id="songSearch"
+        placeholder="Titel suchen..."
       >
-        ← Zur Startseite
-      </a>
-    </p>
+
+    </div>
 
   </div>
 
-  <script src="js/auth.js"></script>
+  <!-- Songliste -->
+
+  <div
+    id="songList"
+    style="margin-top:25px;"
+  >
+
+    <!-- Beispiel Song -->
+
+    <div
+      class="auth-card"
+      style="margin-bottom:20px;"
+    >
+
+      <h3>
+        Beispiel Song
+      </h3>
+
+      <p
+        style="
+        margin-top:10px;
+        color:#b6c2d1;
+        "
+      >
+        Erstellt am:
+        17.06.2026
+      </p>
+
+      <p
+        style="
+        margin-top:10px;
+        color:#b6c2d1;
+        "
+      >
+        Genre:
+        Techno
+      </p>
+
+      <!-- Aktionen -->
+
+      <div
+        style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:15px;
+        margin-top:20px;
+        "
+      >
+
+        <button
+          class="main-btn"
+        >
+          ❤️ Favorit
+        </button>
+
+        <button
+          class="main-btn"
+        >
+          ✏️ Bearbeiten
+        </button>
+
+        <button
+          class="main-btn"
+        >
+          📄 Öffnen
+        </button>
+
+        <button
+          class="main-btn"
+        >
+          🗑️ Löschen
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Neuer Song -->
+
+  <button
+    class="main-btn"
+    onclick="goTo('create-song.html')"
+  >
+    🎵 Neuer Song
+  </button>
+
+  <!-- Zurück -->
+
+  <p
+    style="
+    margin-top:30px;
+    "
+  >
+    <a
+      href="index.html"
+      style="
+      color:#b6c2d1;
+      text-decoration:none;
+      "
+    >
+      ← Zur Startseite
+    </a>
+  </p>
+
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/songs.js"></script>
 
 </body>
 </html>
