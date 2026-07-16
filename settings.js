@@ -1,40 +1,312 @@
-(function(){
-  'use strict';
-  const KEYS={draft:'songCreator.draft.v3',favorites:'songCreator.favorites.v1',templates:'songCreator.templates.v1',history:'songCreator.history.v1'};
-  const STEPS=[['title','Songtitel',10],['themes','Thema',15],['genres','Genre',15],['moods','Stimmung',10],['vocals','Vocals',10],['styles','Stil',10],['languages','Sprache',10],['tempo','Tempo',10],['prompt','Prompt erzeugt',10]];
-  const $=selector=>document.querySelector(selector),root=$('#dynamicCategories'),title=$('#songTitle'),promptPreview=$('#promptPreview'),rolePreview=$('#rolePreview');
-  let state={title:'',selections:{}},favorites=new Set(read(KEYS.favorites,[])),templates=read(KEYS.templates,[]),history=read(KEYS.history,[]);
-  function read(key,fallback){try{const value=JSON.parse(localStorage.getItem(key));return value??fallback;}catch(_){return fallback;}}
-  function write(key,value){localStorage.setItem(key,JSON.stringify(value));}
-  function esc(value){const node=document.createElement('div');node.textContent=value;return node.innerHTML;}
-  function loadDraft(){const saved=read(KEYS.draft,null);if(saved&&typeof saved==='object'){state.title=typeof saved.title==='string'?saved.title:'';state.selections=saved.selections&&typeof saved.selections==='object'?saved.selections:{};}title.value=state.title;}
-  function itemById(category,id){return SongAdmin.category(category)?.items.find(item=>item.id===id);}
-  function selectedItems(category){return(state.selections[category]||[]).map(id=>itemById(category,id)).filter(Boolean);}
-  function getConfig(){const c={title:title.value.trim()||'Unbenannter Song',length:$('#songLength')?.value||'Standard',currentUser:localStorage.getItem('username')||'Gast'};SongAdmin.categories().forEach(category=>c[category.key]=selectedItems(category.key).map(item=>item.name));return c;}
-  function saveDraft(){state.title=title.value;write(KEYS.draft,state);}
-  function buildPrompt(){const lines=[];if(title.value.trim())lines.push(`Titel: ${title.value.trim()}`);SongAdmin.categories().forEach(category=>{const names=selectedItems(category.key).map(item=>item.name);if(names.length)lines.push(`${category.singular}: ${names.join(', ')}`);});if(!lines.length)return'';return `Erstelle einen professionellen, vollständig strukturierten Song für Suno.\n\n${lines.join('\n')}\n\nMit Intro, Strophen, eingängiger Hook, Bridge und Outro. Produktion, Dynamik und Atmosphäre sollen zu allen gewählten Eigenschaften passen.`;}
-  function buildLyricsPreview(){const sound=[...selectedItems('genres'),...selectedItems('styles')].map(i=>i.name).join(' ').toLowerCase();let profile=['Intro','Verse 1','Pre-Chorus','Hook','Verse 2','Bridge','Final Hook','Outro'],style='Bildhafte Sprache, klare Reime und eine einprägsame Hook.';if(/hardstyle|rawstyle|frenchcore/.test(sound)){profile=['Atmospheric Intro','Build-up','First Drop','Break','Vocal Hook','Final Drop','Outro'];style='Kurze Vocal-Phrasen, energiegeladene Calls und Drop-Hooks.';}else if(/deutschrap|hip-hop|trap/.test(sound)){profile=['Intro','Verse 1','Hook','Verse 2','Bridge / Spoken Part','Final Hook','Outro'];style='Mehrsilbige Reime, Pointen und authentisches Storytelling.';}else if(/schlager/.test(sound)){profile=['Intro','Strophe 1','Pre-Refrain','Refrain','Strophe 2','Bridge','Finaler Refrain','Outro'];style='Direkte Bilder, einfache Reime und ein mitsingbarer Refrain.';}else if(/metal|rock/.test(sound)){profile=['Riff Intro','Verse 1','Pre-Chorus','Chorus','Verse 2','Solo / Bridge','Final Chorus','Outro'];style='Kraftvolle Metaphern, Kontraste und eine hymnische Chorus-Zeile.';}else if(/techno|trance|house/.test(sound)){profile=['DJ Intro','Build-up','Main Drop','Breakdown','Vocal Motif','Second Drop','Extended Outro'];style='Hypnotische Wiederholungen und rhythmische Vocal-Chops.';}else if(/viking|wikinger/.test(sound)){profile=['Ritual Intro','Saga Verse','War Chant','Storm Verse','Choir Hook','Final Chant','Outro'];style='Archaische Naturbilder und monumentale Ruf-und-Antwort-Passagen.';}else if(/orchestra|orchestral|cinematic/.test(sound)){profile=['Cinematic Prelude','Verse','Orchestral Rise','Main Theme','Dramatic Bridge','Grand Finale','Epilogue'];style='Filmische Bildsprache und große Spannungsbögen.';}return `SONGTEXT-INSPIRATION\nTitel: ${title.value.trim()||'Unbenannter Song'}\nStilmittel: ${style}\n\n${profile.map(p=>`[${p}]\n${/hook|chorus|refrain|chant/i.test(p)?'Zentrale Botschaft als wiederholbare Schlüsselzeile.':'Geschichte, Atmosphäre und Emotion passend weiterentwickeln.'}`).join('\n\n')}`;}
-  function completion(){const done={title:Boolean(title.value.trim()),prompt:Boolean(buildPrompt())};Object.keys(SongAdmin.category('themes')?state.selections:{}).forEach(key=>done[key]=(state.selections[key]||[]).length>0);return done;}
-  function updateExperience(){const done=completion();let percent=0,last='Start',next='Alle Schritte abgeschlossen';for(const[key,label,weight]of STEPS){if(done[key]){percent+=weight;last=label;}else if(next==='Alle Schritte abgeschlossen')next=label;}$('#progressFill').style.width=`${percent}%`;$('#progressValue').textContent=`${percent} %`;$('#progressTrack').setAttribute('aria-valuenow',String(percent));$('#currentStepText').textContent=last;$('#nextStepText').textContent=next;promptPreview.textContent=buildPrompt();$('#lyricsPreview').textContent=buildLyricsPreview();saveDraft();}
-  function createItem(item,category,role,favoriteView=false){const wrap=document.createElement('div');wrap.className='choice-item';const option=document.createElement('button');option.type='button';option.className=favoriteView?'favorite-choice':'option-card';option.dataset.id=item.id;option.dataset.value=item.name;if(favoriteView)option.dataset.favoriteChoice=category;option.textContent=item.name;if((state.selections[category]||[]).includes(item.id))option.classList.add('active');if(!SongAdmin.canSelect(item,role)){option.disabled=true;option.classList.add('locked-card');}if(!item.active)option.classList.add('inactive-card');const star=document.createElement('button');star.type='button';star.className=`favorite-star${favorites.has(item.id)?' active':''}`;star.dataset.favorite=item.id;star.setAttribute('aria-label',`${item.name} als Favorit markieren`);star.textContent='⭐';wrap.append(option,star);return wrap;}
-  function renderCategory(category,role){const section=document.createElement('section');section.className='auth-card dynamic-category';section.dataset.category=category.key;section.innerHTML=`<div class="category-heading"><h2>${category.icon} ${esc(category.singular)}</h2><button class="random-button" type="button" data-random="${category.key}">🎲 Zufällig</button></div><div class="category-tabs" role="tablist"></div><div class="tier-panels"></div>`;const tabs=section.querySelector('.category-tabs'),panels=section.querySelector('.tier-panels'),items=SongAdmin.visibleItems(category.key,role),labels={normal:'Normal',premium:'Premium',exclusive:'Exklusiv',favorites:'⭐ Favoriten'};[...SongAdmin.TIERS,'favorites'].forEach((tier,index)=>{const list=tier==='favorites'?items.filter(item=>favorites.has(item.id)):items.filter(item=>item.tier===tier);const tab=document.createElement('button');tab.type='button';tab.className=`category-tab${index===0?' active':''}`;tab.dataset.tier=tier;tab.innerHTML=`${labels[tier]} <span>${list.length}</span>`;tabs.append(tab);const panel=document.createElement('div');panel.className='option-grid tier-panel';panel.dataset.tier=tier;panel.hidden=index!==0;list.forEach(item=>panel.append(createItem(item,category.key,role,tier==='favorites')));if(!list.length)panel.innerHTML='<p class="empty-list">Keine Einträge</p>';panels.append(panel);});tabs.addEventListener('click',event=>{const tab=event.target.closest('.category-tab');if(!tab)return;tabs.querySelectorAll('.category-tab').forEach(button=>button.classList.toggle('active',button===tab));panels.querySelectorAll('.tier-panel').forEach(panel=>panel.hidden=panel.dataset.tier!==tab.dataset.tier);});return section;}
-  function enforceLimits(role){const unlimited=SongAdmin.MANAGER_ROLES.includes(role);SongAdmin.categories().forEach(category=>{const allowed=[...new Set(state.selections[category.key]||[])].filter(id=>{const item=itemById(category.key,id);return item&&SongAdmin.canSelect(item,role);});state.selections[category.key]=unlimited?allowed:allowed.slice(0,5);});}
-  function renderAll(){const role=SongPermissions.role();enforceLimits(role);rolePreview.value=role;root.replaceChildren(...SongAdmin.categories().map(category=>renderCategory(category,role)));updateExperience();}
-  let toastTimer;function showLimitMessage(){const toast=$('#selectionToast');toast.textContent='Du kannst pro Kategorie bis zu 5 Einträge auswählen. Entferne zuerst eine Auswahl.';toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),3600);}
-  function toggleOption(button){const section=button.closest('[data-category]'),category=section.dataset.category,id=button.dataset.id,current=new Set(state.selections[category]||[]),unlimited=SongAdmin.MANAGER_ROLES.includes(SongPermissions.role());if(current.has(id))current.delete(id);else{if(!unlimited&&current.size>=5){showLimitMessage();return;}current.add(id);}state.selections[category]=[...current];section.querySelectorAll(`[data-id="${id}"]`).forEach(item=>item.classList.toggle('active',current.has(id)));updateExperience();}
-  function chooseRandom(categoryKey){const role=SongPermissions.role(),items=SongAdmin.visibleItems(categoryKey,role).filter(item=>SongAdmin.canSelect(item,role));if(!items.length)return;const item=items[Math.floor(Math.random()*items.length)];state.selections[categoryKey]=[item.id];renderAll();const section=root.querySelector(`[data-category="${categoryKey}"]`),tab=section.querySelector(`.category-tab[data-tier="${item.tier}"]`);tab.click();}
-  function toggleFavorite(id){favorites.has(id)?favorites.delete(id):favorites.add(id);write(KEYS.favorites,[...favorites]);renderAll();}
-  function saveTemplate(){const name=prompt('Name der Vorlage (z. B. Hardstyle, Gaming oder Weihnachten):');if(!name?.trim())return;templates.unshift({id:`tpl-${Date.now()}`,name:name.trim(),title:title.value,selections:JSON.parse(JSON.stringify(state.selections)),createdAt:new Date().toISOString()});templates=templates.slice(0,50);write(KEYS.templates,templates);renderTemplates();}
-  function applyTemplate(id){const template=templates.find(entry=>entry.id===id);if(!template)return;title.value=template.title||'';state.selections=JSON.parse(JSON.stringify(template.selections||{}));renderAll();$('#templatesDialog').close();}
-  function renderTemplates(){const list=$('#templatesList');list.innerHTML=templates.length?templates.map(t=>`<article><div><strong>${esc(t.name)}</strong><small>${new Date(t.createdAt).toLocaleString('de-DE')}</small></div><div><button data-apply-template="${t.id}">Anwenden</button><button class="danger" data-delete-template="${t.id}">🗑</button></div></article>`).join(''):'<p class="empty-list">Noch keine Vorlagen gespeichert.</p>';}
-  function exportTemplates(){const blob=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),templates},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='song-creator-vorlagen.json';link.click();URL.revokeObjectURL(url);}
-  function importTemplates(file){const reader=new FileReader();reader.onload=()=>{try{const parsed=JSON.parse(reader.result),incoming=Array.isArray(parsed)?parsed:parsed.templates;if(!Array.isArray(incoming))throw Error();const valid=incoming.filter(t=>t&&typeof t.name==='string'&&t.selections&&typeof t.selections==='object').map(t=>({...t,id:`tpl-${Date.now()}-${Math.random().toString(36).slice(2)}`}));templates=[...valid,...templates].slice(0,50);write(KEYS.templates,templates);renderTemplates();alert(`${valid.length} Vorlage(n) importiert.`);}catch(_){alert('Die JSON-Datei enthält keine gültigen Song-Creator-Vorlagen.');}};reader.readAsText(file);}
-  function addHistory(){if(!title.value.trim())return;history.unshift({id:`song-${Date.now()}`,date:new Date().toISOString(),title:title.value.trim(),prompt:buildPrompt(),song:$('#songText').value});history=history.slice(0,20);write(KEYS.history,history);}
-  function renderHistory(){const list=$('#historyList');list.innerHTML=history.length?history.map(entry=>`<article class="history-entry"><div><strong>${esc(entry.title||'Ohne Titel')}</strong><small>${new Date(entry.date).toLocaleString('de-DE')}</small></div><pre>${esc(entry.prompt)}</pre></article>`).join(''):'<p class="empty-list">Noch keine Songs erzeugt.</p>';}
-  rolePreview.innerHTML=Object.entries(SongAdmin.ROLE_LABELS).map(([role,label])=>`<option value="${role}">${esc(label)}</option>`).join('');
-  rolePreview.addEventListener('change',event=>SongPermissions.setRole(event.target.value));document.addEventListener('songcreator:rolechange',renderAll);title.addEventListener('input',updateExperience);
-  async function copyText(text){await navigator.clipboard.writeText(text);}$('#copyPromptButton').onclick=()=>copyText(buildPrompt());$('#copyLyricsButton').onclick=()=>copyText(buildLyricsPreview());$('#copyCompleteButton').onclick=()=>copyText(`${buildPrompt()}\n\n--- SONGTEXT ---\n${buildLyricsPreview()}`);
-  root.addEventListener('click',event=>{const star=event.target.closest('[data-favorite]'),random=event.target.closest('[data-random]'),choice=event.target.closest('.option-card:not(:disabled),[data-favorite-choice]:not(:disabled)');if(star){event.preventDefault();event.stopPropagation();toggleFavorite(star.dataset.favorite);return;}if(random){chooseRandom(random.dataset.random);return;}if(choice){event.preventDefault();toggleOption(choice);}});
-  $('#generateButton').addEventListener('click',()=>{generateSong();if($('#songText').value.trim())addHistory();});$('#saveTemplateButton').addEventListener('click',saveTemplate);$('#templatesButton').addEventListener('click',()=>{renderTemplates();$('#templatesDialog').showModal();});$('#historyButton').addEventListener('click',()=>{renderHistory();$('#historyDialog').showModal();});$('#exportTemplatesButton').addEventListener('click',exportTemplates);$('#importTemplatesInput').addEventListener('change',event=>{const[file]=event.target.files;if(file)importTemplates(file);event.target.value='';});document.querySelectorAll('[data-close]').forEach(button=>button.addEventListener('click',()=>document.getElementById(button.dataset.close).close()));$('#templatesList').addEventListener('click',event=>{const apply=event.target.closest('[data-apply-template]'),remove=event.target.closest('[data-delete-template]');if(apply)applyTemplate(apply.dataset.applyTemplate);if(remove){templates=templates.filter(t=>t.id!==remove.dataset.deleteTemplate);write(KEYS.templates,templates);renderTemplates();}});
-  loadDraft();window.SongCreatorUI=Object.freeze({handlesSelections:true,update:updateExperience,buildPrompt,getConfig});renderAll();
-}());
+// =========================
+// Passwort anzeigen
+// =========================
+
+function togglePassword(inputId) {
+
+  const input =
+    document.getElementById(
+      inputId
+    );
+
+  if (!input) return;
+
+  input.type =
+    input.type === "password"
+      ? "text"
+      : "password";
+}
+
+// =========================
+// Owner Account
+// =========================
+
+const OWNER_ACCOUNT = {
+
+  username:
+    "GörnaldoBerlin",
+
+  email:
+    "owner@songcreator.local",
+
+  password:
+    "BitteSpäterÄndern123",
+
+  role:
+    "Owner",
+
+  premium:
+    true
+
+};
+
+// =========================
+// Registrierung
+// =========================
+
+function validateRegister() {
+
+  const username =
+    document.getElementById(
+      "username"
+    );
+
+  const email =
+    document.getElementById(
+      "email"
+    );
+
+  const password =
+    document.getElementById(
+      "password"
+    );
+
+  const password2 =
+    document.getElementById(
+      "password2"
+    );
+
+  const agb =
+    document.getElementById(
+      "agb"
+    );
+
+  if (
+    !username.value.trim()
+  ) {
+
+    alert(
+      "Bitte Benutzername eingeben."
+    );
+
+    return;
+  }
+
+  if (
+    !email.value.includes(
+      "@"
+    )
+  ) {
+
+    alert(
+      "Bitte gültige E-Mail eingeben."
+    );
+
+    return;
+  }
+
+  if (
+    password.value.length < 8
+  ) {
+
+    alert(
+      "Passwort mindestens 8 Zeichen."
+    );
+
+    return;
+  }
+
+  if (
+    password.value !==
+    password2.value
+  ) {
+
+    alert(
+      "Passwörter stimmen nicht überein."
+    );
+
+    return;
+  }
+
+  if (
+    !agb.checked
+  ) {
+
+    alert(
+      "Bitte AGB akzeptieren."
+    );
+
+    return;
+  }
+
+  alert(
+    "Lokale Registrierung folgt später."
+  );
+
+}
+
+// =========================
+// Login
+// =========================
+
+function validateLogin() {
+
+  const email =
+    document.getElementById(
+      "email"
+    );
+
+  const password =
+    document.getElementById(
+      "password"
+    );
+
+  if (
+    email.value.trim() === ""
+  ) {
+
+    alert(
+      "Bitte Benutzername oder E-Mail eingeben."
+    );
+
+    return;
+  }
+
+  if (
+    password.value.trim() === ""
+  ) {
+
+    alert(
+      "Bitte Passwort eingeben."
+    );
+
+    return;
+  }
+
+  // =========================
+  // Owner Login
+  // =========================
+
+  if (
+
+    (
+      email.value.trim() ===
+      OWNER_ACCOUNT.username ||
+
+      email.value.trim() ===
+      OWNER_ACCOUNT.email
+
+    )
+
+    &&
+
+    password.value ===
+    OWNER_ACCOUNT.password
+
+  ) {
+
+    localStorage.setItem(
+      "loggedIn",
+      "true"
+    );
+
+    localStorage.setItem(
+      "username",
+      OWNER_ACCOUNT.username
+    );
+
+    localStorage.setItem(
+      "email",
+      OWNER_ACCOUNT.email
+    );
+
+    localStorage.setItem(
+      "role",
+      OWNER_ACCOUNT.role
+    );
+
+    localStorage.setItem(
+      "premium",
+      "true"
+    );
+
+    alert(
+      "Willkommen zurück, Owner!"
+    );
+
+    window.location.href =
+      "index.html";
+
+    return;
+  }
+
+  alert(
+    "Benutzername oder Passwort falsch."
+  );
+
+}
+
+// =========================
+// Logout
+// =========================
+
+function logout() {
+
+  localStorage.removeItem(
+    "loggedIn"
+  );
+
+  localStorage.removeItem(
+    "username"
+  );
+
+  localStorage.removeItem(
+    "email"
+  );
+
+  localStorage.removeItem(
+    "role"
+  );
+
+  localStorage.removeItem(
+    "premium"
+  );
+
+  window.location.href =
+    "login.html";
+
+}
+
+// =========================
+// Eingeloggt?
+// =========================
+
+function isLoggedIn() {
+
+  return (
+    localStorage.getItem(
+      "loggedIn"
+    ) === "true"
+  );
+
+}
+
+// =========================
+// Passwort vergessen
+// =========================
+
+function sendResetCode() {
+
+  const email =
+    document.getElementById(
+      "resetEmail"
+    );
+
+  if (
+    !email.value.includes(
+      "@"
+    )
+  ) {
+
+    alert(
+      "Bitte gültige E-Mail eingeben."
+    );
+
+    return;
+  }
+
+  alert(
+    "Reset-Code folgt später über Supabase."
+  );
+
+}

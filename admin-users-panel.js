@@ -1,0 +1,1 @@
+(function(){'use strict';window.AdminPremium=Object.freeze({get:()=>AdminCore.snapshot().premium,save:value=>AdminCore.setSection('premium',value),exclusive:()=>AdminCore.snapshot().exclusive,saveExclusive:value=>AdminCore.setSection('exclusive',value)});}());

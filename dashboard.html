@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Mehr - Song Creator Studio</title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+</head>
+<link rel="stylesheet" href="css/desktop-ui.css">
+
+<body>
+
+<div class="container">
+
+  <!-- Logo -->
+
+  <div class="logo-box">
+    <img
+      src="assets/logo.png"
+      alt="GB Logo"
+      class="logo auth-logo"
+    >
+  </div>
+
+  <!-- Titel -->
+
+  <h1>Mehr</h1>
+
+  <p class="subtitle">
+    Einstellungen und Konto.
+  </p>
+
+  <!-- Profil -->
+
+  <div class="auth-card">
+
+    <h2>👤 Profil</h2>
+
+    <p
+      style="
+      margin-top:20px;
+      color:#b6c2d1;
+      "
+    >
+      Benutzer: <span id="moreUsername">Nicht angemeldet</span>
+    </p>
+
+    <p
+      style="
+      margin-top:10px;
+      color:#b6c2d1;
+      "
+    >
+      Rolle: <span id="moreRole">Gast</span>
+    </p>
+
+    <p
+      style="
+      margin-top:10px;
+      color:#b6c2d1;
+      "
+    >
+      Premium: <span id="morePremium">Nein</span>
+    </p>
+
+    <button class="main-btn" style="margin-top:20px;" onclick="goTo('profile.html')">👤 Profil öffnen</button>
+  </div>
+
+  <!-- Einstellungen -->
+
+  <div
+    class="auth-card"
+    style="margin-top:25px;"
+  >
+
+    <h2>⚙️ Einstellungen</h2>
+
+    <div
+      style="
+      display:grid;
+      gap:15px;
+      margin-top:20px;
+      "
+    >
+
+      <button
+        class="main-btn"
+      >
+        🌙 Dunkelmodus
+      </button>
+
+      <button
+        class="main-btn"
+      >
+        🌍 Sprache
+      </button>
+
+      <button
+        class="main-btn"
+      >
+        🔑 Passwort ändern
+      </button>
+
+      <button
+        class="main-btn"
+      >
+        👤 Profil bearbeiten
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Premium -->
+
+  <div
+    class="auth-card"
+    style="margin-top:25px;"
+  >
+
+    <h2>💎 Premium</h2>
+
+    <p
+      style="
+      margin-top:20px;
+      color:#b6c2d1;
+      "
+    >
+      Schalte mehr Themen,
+      Genres und Funktionen frei.
+    </p>
+
+    <button
+      class="main-btn"
+      onclick="goTo('shop.html')"
+      style="margin-top:20px;"
+    >
+      💎 Premium ansehen
+    </button>
+
+  </div>
+
+  <!-- Admin -->
+
+  <div id="adminMenuEntry"
+    class="auth-card"
+    style="margin-top:25px;display:none;"
+  >
+
+    <h2>👑 Administration</h2>
+
+    <p
+      style="
+      margin-top:20px;
+      color:#b6c2d1;
+      "
+    >
+      Nur für berechtigte Benutzer sichtbar.
+    </p>
+
+    <button
+      class="main-btn"
+      onclick="goTo('admin.html')"
+      style="margin-top:20px;"
+    >
+      👑 Admin-Panel
+    </button>
+
+  </div>
+
+  <!-- Konto -->
+
+  <div
+    class="auth-card"
+    style="margin-top:25px;"
+  >
+
+    <h2>🔐 Konto</h2>
+
+    <div
+      style="
+      display:grid;
+      gap:15px;
+      margin-top:20px;
+      "
+    >
+
+      <button
+        class="main-btn"
+        onclick="goTo('login.html')"
+      >
+        🔐 Login
+      </button>
+
+      <button
+        class="main-btn"
+        onclick="goTo('register.html')"
+      >
+        📝 Registrieren
+      </button>
+
+      <button
+        class="main-btn"
+      >
+        🚪 Abmelden
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Zurück -->
+
+  <p
+    style="
+    margin-top:30px;
+    "
+  >
+    <a
+      href="index.html"
+      style="
+      color:#b6c2d1;
+      text-decoration:none;
+      "
+    >
+      ← Zur Startseite
+    </a>
+  </p>
+
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/settings.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const role = getRole();
+  document.getElementById('moreUsername').textContent = getUsername();
+  document.getElementById('moreRole').textContent = role;
+  document.getElementById('morePremium').textContent = isPremium() ? 'Aktiv' : 'Nein';
+  if (['Moderator','Administrator','Superadmin','Owner'].includes(role)) {
+    document.getElementById('adminMenuEntry').style.display = 'block';
+  }
+});
+</script>
+
+</body>
+</html>

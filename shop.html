@@ -1,9 +1,171 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Premium-Shop – Song Creator</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/shop-premium.css"></head><body class="shop-page"><main class="premium-shop-shell">
-<a class="shop-back" href="index.html">← Hauptmenü</a>
-<section class="premium-price-hero"><div class="premium-mark">💎</div><p class="shop-kicker">PREMIUM SHOP</p><h1>Song Creator Premium</h1><p id="shopDescription" class="premium-description"></p>
-<div class="billing-switch" role="group" aria-label="Abrechnungszeitraum"><button id="monthlyBilling" class="active" type="button">Monatlich</button><button id="yearlyBilling" type="button">Jährlich</button></div>
-<div class="price-display"><strong id="visiblePrice">4,99 €</strong><span id="pricePeriod">/ Monat</span></div><p id="yearlySaving" class="saving-line"></p><p id="trialLine" class="trial-line"></p>
-<div id="accountStatusCard" class="account-status-card"><strong id="accountStatus">FREE ACCOUNT</strong><span id="accountStatusText">Premium noch nicht aktiv.</span><div id="premiumDetails" hidden></div></div>
-<button id="buyPremium" class="premium-buy" type="button">💎 Premium kaufen</button><p id="shopNotice" class="shop-notice" aria-live="polite"></p></section>
-<section class="shop-card"><h2>Free und Premium im Vergleich</h2><div class="compare-wrap"><table class="compare-table"><thead><tr><th>Funktion</th><th>Free</th><th>Premium</th></tr></thead><tbody><tr><td>Themen</td><td>2</td><td>∞</td></tr><tr><td>Genres</td><td>2</td><td>5</td></tr><tr><td>Stimmung</td><td>2</td><td>5</td></tr><tr><td>Vocals</td><td>2</td><td>5</td></tr><tr><td>Instrumente</td><td>2</td><td>5</td></tr><tr><td>Soundeffekte</td><td>2</td><td>5</td></tr><tr><td>Tempo</td><td>2</td><td>5</td></tr><tr><td>Prompt-Pakete</td><td>Nein</td><td>Ja</td></tr><tr><td>Premium-Inhalte</td><td>Nein</td><td>Ja</td></tr></tbody></table></div></section>
-<section class="shop-card benefits"><h2>Premium-Vorteile</h2><ul id="premiumBenefits"></ul></section></main><script src="js/app.js"></script><script src="js/shop-config.js"></script><script src="js/shop-ui.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Meine Songs - Song Creator Studio</title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+</head>
+<link rel="stylesheet" href="css/desktop-ui.css">
+
+<body>
+
+<div class="container">
+
+  <!-- Logo -->
+
+  <div class="logo-box">
+    <img
+      src="assets/logo.png"
+      alt="GB Logo"
+      class="logo auth-logo"
+    >
+  </div>
+
+  <!-- Titel -->
+
+  <h1>Meine Songs</h1>
+
+  <p class="subtitle">
+    Hier findest du deine erstellten Songs.
+  </p>
+
+  <!-- Suche -->
+
+  <div class="auth-card">
+
+    <div class="input-group">
+
+      <label>Suche</label>
+
+      <input
+        type="text"
+        id="songSearch"
+        placeholder="Titel suchen..."
+      >
+
+    </div>
+
+  </div>
+
+  <!-- Songliste -->
+
+  <div
+    id="songList"
+    style="margin-top:25px;"
+  >
+
+    <!-- Beispiel Song -->
+
+    <div
+      class="auth-card"
+      style="margin-bottom:20px;"
+    >
+
+      <h3>
+        Beispiel Song
+      </h3>
+
+      <p
+        style="
+        margin-top:10px;
+        color:#b6c2d1;
+        "
+      >
+        Erstellt am:
+        17.06.2026
+      </p>
+
+      <p
+        style="
+        margin-top:10px;
+        color:#b6c2d1;
+        "
+      >
+        Genre:
+        Techno
+      </p>
+
+      <!-- Aktionen -->
+
+      <div
+        style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:15px;
+        margin-top:20px;
+        "
+      >
+
+        <button
+          class="main-btn"
+        >
+          ❤️ Favorit
+        </button>
+
+        <button
+          class="main-btn"
+        >
+          ✏️ Bearbeiten
+        </button>
+
+        <button
+          class="main-btn"
+        >
+          📄 Öffnen
+        </button>
+
+        <button
+          class="main-btn"
+        >
+          🗑️ Löschen
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Neuer Song -->
+
+  <button
+    class="main-btn"
+    onclick="goTo('create-song.html')"
+  >
+    🎵 Neuer Song
+  </button>
+
+  <!-- Zurück -->
+
+  <p
+    style="
+    margin-top:30px;
+    "
+  >
+    <a
+      href="index.html"
+      style="
+      color:#b6c2d1;
+      text-decoration:none;
+      "
+    >
+      ← Zur Startseite
+    </a>
+  </p>
+
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/songs.js"></script>
+
+</body>
+</html>
