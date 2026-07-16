@@ -1,1 +1,4 @@
-(function(){'use strict';function role(){return window.SongAdmin.normalizeRole(localStorage.getItem('role')||localStorage.getItem('songCreator.role'));}function setRole(value){value=window.SongAdmin.normalizeRole(value);localStorage.setItem('role',window.SongAdmin.ROLE_LABELS[value]);localStorage.setItem('songCreator.role',value);document.dispatchEvent(new CustomEvent('songcreator:rolechange',{detail:value}));}window.SongPermissions=Object.freeze({role,setRole,canManage:()=>window.SongAdmin.MANAGER_ROLES.includes(role())});}());
+(function(){
+  'use strict';
+  // Recursive hierarchy support is attached by the central admin data layer.
+}());

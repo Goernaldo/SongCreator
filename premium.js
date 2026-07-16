@@ -1,47 +1,43 @@
-// =========================
-// Navigation
-// =========================
-
-function goTo(page) {
-  window.location.href = page;
-}
-
-// =========================
-// Zurück
-// =========================
-
-function goBack() {
-  window.history.back();
-}
-
-// =========================
-// Loginstatus
-// =========================
-
-function isLoggedIn() {
-  return localStorage.getItem("loggedIn") === "true";
-}
-
-// =========================
-// Benutzername
-// =========================
-
-function getUsername() {
-  return localStorage.getItem("username") || "Gast";
-}
-
-// =========================
-// Premium
-// =========================
-
-function isPremium() {
-  return localStorage.getItem("premium") === "true";
-}
-
-// =========================
-// Rolle
-// =========================
-
-function getRole() {
-  return localStorage.getItem("role") || "Gast";
-}
+(function(){
+  'use strict';
+  const STORAGE_KEY='songCreator.admin.v4',TIERS=['normal','premium','exclusive'],ROLES=['user','premium','moderator','administrator','superadmin','owner'];
+  const ROLE_LABELS={user:'Benutzer',premium:'Premium',moderator:'Moderator',administrator:'Administrator',superadmin:'Superadmin',owner:'Owner'},MANAGER_ROLES=['moderator','administrator','superadmin','owner'];
+  const words=value=>value.split('|').map(item=>item.trim()).filter(Boolean);
+  function catalog(base,count,modifiers,subjects){const result=[...new Set(base)];for(const modifier of modifiers){for(const subject of subjects){if(result.length>=count)return result;const name=`${modifier} ${subject}`.trim();if(!result.includes(name))result.push(name);}}if(result.length<count)throw Error(`Katalog zu klein: ${result.length}/${count}`);return result.slice(0,count);}
+  const themeSubjects=words('Abenteuer|Alltag|Anime|Arbeit|Berge|Berlin|Cyberpunk|Drachen|Familie|Fantasy|Festival|Feuer|Freundschaft|Fußball|Gaming|Hoffnung|Kinder|Liebe|Meer|Motivation|Mystery|Mythologie|Nacht|Natur|Party|Piraten|Regen|Reise|Roboter|Sommer|Streaming|Träume|Urlaub|Weltraum|Winter|YouTube');
+  const genreSubjects=words('Ambient|Bass|Beats|Blues|Choir|Country|Dance|Disco|Drill|Dub|Electro|Folk|Funk|Garage|Hardcore|House|Jazz|Metal|Orchestra|Pop|Punk|Rap|Reggae|Rock|Soul|Techno|Trance|Trap|Wave');
+  const moodSubjects=words('Atmosphäre|Energie|Erwartung|Freude|Gefahr|Gefühl|Hoffnung|Liebe|Melancholie|Motivation|Nacht|Nostalgie|Ruhe|Spannung|Trauer|Verlangen|Wut');
+  const voiceSubjects=words('Bariton|Bass|Chor|Duett|Erzähler|Falsett|Frauenchor|Gesang|Kinderchor|Männerchor|Rap|Sopran|Stimme|Tenor|Vocoder');
+  const styleSubjects=words('Arrangement|Atmosphäre|Beat|Dramaturgie|Groove|Harmonie|Klangbild|Komposition|Melodie|Mix|Produktion|Rhythmus|Songwriting|Sound|Textur');
+  const instrumentSubjects=words('Akkordeon|Bass|Cello|Drums|Flöte|Gitarre|Harfe|Horn|Klavier|Orgel|Percussion|Saxophon|Synthesizer|Trompete|Violine');
+  const effectSubjects=words('Applaus|Donner|Explosion|Feuer|Gewitter|Herzschlag|Motor|Publikum|Regen|Schritte|Sirene|Stadion|Sturm|Wellen|Wind');
+  const sceneSubjects=words('Arena|Berggipfel|Bühne|Club|Festival|Großstadt|Hafen|Küste|Labor|Nacht|Raumschiff|Schlachtfeld|Stadion|Straße|Wald');
+  const db={
+    themes:{label:'Themen',singular:'Thema',icon:'🎵',normal:catalog(words('Liebe|Freundschaft|Gaming|Streaming|YouTube|TikTok|Fußball|Basketball|Motorsport|Formel 1|Werder Bremen|WM 2026|Berlin|Sommer|Winter|Halloween|Weihnachten|Silvester|Urlaub|Strand|Meer|Berge|Nacht|Regen|Gewitter|Feuer|Drachen|Fantasy|Mittelalter|Wikinger|Piraten|Cowboys|Weltraum|Aliens|Roboter|Cyberpunk|Katzen|Hunde|Pferde|Natur|Arbeit|Schule|Familie|Kinder|Party|Disco|Festival|Club|Fitness|Motivation|Trauer|Hoffnung|Mut|Abenteuer|Mystery|Horror|Anime|Manga|Mythologie|Legenden|Heimat|Freiheit|Zusammenhalt|Erfolg|Neuanfang|Roadtrip|Großstadt|Dorfleben|Zeitreise|Superhelden|Magie|Freizeit|Geburtstag|Hochzeit|Abschied|Wiedersehen'),200,words('Akustisches|Brennendes|Digitales|Dunkles|Einsames|Elektrisches|Episches|Fernes|Geheimes|Goldenes|Historisches|Kosmisches|Magisches|Modernes|Neon|Nächtliches|Romantisches|Stürmisches|Verlorenes|Wildes'),themeSubjects),premium:catalog([],35,words('Premium|Cinematic|Legendäres|Monumentales|Virtuelles'),themeSubjects),exclusive:catalog([],15,words('Exklusives'),themeSubjects)},
+    genres:{label:'Genres',singular:'Genre',icon:'🎼',normal:catalog(words('Hardstyle|Rawstyle|Frenchcore|Hardcore|Gabber|Techno|Trance|Psytrance|Goa|House|Future House|Deep House|Slap House|Electro|EDM|Dubstep|Drum & Bass|Future Bass|Synthwave|Retrowave|Cyberpunk|Deutschrap|Trap|Boom Bap|Cloud Rap|Emo Rap|Hip-Hop|Pop|Rock|Hard Rock|Metal|Death Metal|Power Metal|Symphonic Metal|Country|Folk|Jazz|Soul|R&B|Blues|LoFi|Ambient|Epic Orchestra|Cinematic|Choir|Anime|K-Pop|J-Pop|Schlager|Reggae|Dancehall|Afrobeat|Latin|Salsa|Merengue|Bachata|Grime|Drill|G-Funk|Disco|Funk|Gospel|Punk|Post Rock|Indie Pop|Indie Rock|Alternative Rock|Progressive Rock|Black Metal|Thrash Metal|Nu Metal|Metalcore|Rockabilly|Bluegrass'),150,words('Acid|Alternative|Atmospheric|Classic|Dark|Deep|Digital|Dream|Experimental|German|Hybrid|Industrial|Melodic|Modern|Neo|Progressive|Retro|Underground'),genreSubjects),premium:catalog([],20,words('Premium|Cinematic Premium'),genreSubjects),exclusive:catalog([],10,words('Exclusive'),genreSubjects)},
+    moods:{label:'Stimmungen',singular:'Stimmung',icon:'😊',normal:catalog(words('Episch|Heroisch|Traurig|Glücklich|Romantisch|Aggressiv|Dunkel|Mystisch|Motivierend|Gefährlich|Verliebt|Einsam|Hoffnungsvoll|Nostalgisch|Dramatisch|Party|Entspannt|Chaotisch|Emotional|Gänsehaut|Fröhlich|Nachdenklich|Melancholisch|Friedlich|Euphorisch|Wütend|Verträumt|Spannend|Bedrohlich|Humorvoll|Feierlich|Sinnlich|Rebellisch|Majestätisch|Verspielt|Geheimnisvoll'),120,words('Abgrundtiefe|Aufgeladene|Brennende|Dichte|Elektrische|Extreme|Fließende|Intensive|Leise|Leuchtende|Pure|Rasende|Sanfte|Schwebende|Tiefe|Unruhige|Warme|Wilde'),moodSubjects),premium:catalog([],20,words('Premium|Cinematic Premium'),moodSubjects),exclusive:catalog([],10,words('Exklusive'),moodSubjects)},
+    vocals:{label:'Vocals',singular:'Vocals',icon:'🎤',normal:catalog(words('Männlich|Weiblich|Duett|Kinderchor|Oper|Rap|Gesang|Growl|Screaming|Whisper|Deep Voice|Robot Voice|AI Voice|Viking Choir|Gospel Choir|AutoTune|Narrator|Old Radio|Choir|Acapella|Bariton|Bassstimme|Tenor|Sopran|Falsett|Sprechgesang|Harmonien|Call and Response|Vocoder|Flüstern'),80,words('Atemreicher|Breiter|Dunkler|Emotionaler|Heller|Intimer|Klarer|Kraftvoller|Mehrstimmiger|Rauer|Sanfter|Verzerrter'),voiceSubjects),premium:catalog([],15,words('Premium|Studio Premium'),voiceSubjects),exclusive:catalog([],5,words('Exclusive'),voiceSubjects)},
+    languages:{label:'Sprachen',singular:'Sprache',icon:'🌍',normal:words('Deutsch|Englisch|Französisch|Spanisch|Italienisch|Norwegisch|Schwedisch|Finnisch|Dänisch|Japanisch|Koreanisch|Chinesisch|Latein|Russisch|Arabisch|Hindi|Portugiesisch|Türkisch|Polnisch|Niederländisch|Griechisch|Tschechisch|Slowakisch|Ungarisch|Rumänisch|Bulgarisch|Kroatisch|Serbisch|Slowenisch|Ukrainisch|Hebräisch|Persisch|Urdu|Bengalisch|Tamil|Vietnamesisch|Thailändisch|Indonesisch|Malaiisch|Swahili'),premium:words('Isländisch|Gälisch|Walisisch|Baskisch|Katalanisch|Esperanto|Maori'),exclusive:words('Altnordisch|Altenglisch|Klingonisch')},
+    styles:{label:'Musikstile',singular:'Musikstil',icon:'✨',normal:catalog(words('Akustisch|Minimalistisch|Modern|Retro|Cinematic|Atmosphärisch|Tanzbar|Radiofreundlich|Experimentell|Organisch|Elektronisch|Orchestral|LoFi|Live|Unplugged|Vintage|Futuristisch|Dramaturgisch|Groovig|Melodisch|Rhythmisch|Texturiert|Monumental|Intim|Roh'),80,words('Analoger|Breiter|Dichter|Dynamischer|Eleganter|Emotionaler|Filmischer|Glänzender|Klarer|Kraftvoller|Moderner|Rauer|Räumlicher|Sanfter'),styleSubjects),premium:catalog([],15,words('Premium|Studio Premium'),styleSubjects),exclusive:catalog([],5,words('Exclusive'),styleSubjects)},
+    instruments:{label:'Instrumente',singular:'Instrumente',icon:'🎸',normal:catalog(words('Gitarren|Piano|Drums|Bass|Cello|Violine|Orchester|Synth|Flöte|Trompete|Saxophon|Banjo|Harfe|Akkordeon|Orgel|Percussion|Ukulele|Mandoline|Klarinette|Oboe|Fagott|Horn|Posaune|Tuba|Xylophon|Marimba|Steel Drum|Dudelsack|Sitar|Didgeridoo'),95,words('Akustische|Analoge|Dunkle|Elektrische|Gezupfte|Helle|Historische|Hybrid|Klassische|Layered|Modulare|Orchestrale'),instrumentSubjects),premium:catalog([],20,words('Premium|Virtuoso Premium'),instrumentSubjects),exclusive:catalog([],5,words('Exclusive'),instrumentSubjects)},
+    soundEffects:{label:'Soundeffekte',singular:'Soundeffekte',icon:'🔊',normal:catalog(words('Regen|Wind|Gewitter|Explosion|Publikum|Applaus|Herzschlag|Schritte|Stadion|Feuer|Wellen|Motor|Hubschrauber|Sirene|Vogelgezwitscher|Donner|Großstadt|Wald|Bahnhof|Flughafen|Uhrenticken|Türknarren|Glasbruch|Laser|Raumschiff|Radio Rauschen|Vinyl Knistern|Telefon|Kirchenglocken|Kinderlachen'),100,words('Entferntes|Hallendes|Intensives|Leises|Nahes|Nächtliches|Räumliches|Rhythmisches|Starkes|Subtiles'),effectSubjects),premium:catalog([],15,words('Premium|Cinematic Premium'),effectSubjects),exclusive:catalog([],5,words('Exclusive'),effectSubjects)},
+    tempo:{label:'Tempo',singular:'Tempo',icon:'⏱',normal:catalog(words('Langsam|Mittel|Schnell|Sehr langsam|Sehr schnell|Halftime|Doubletime|Variabel|Freies Tempo|Rubato|60 BPM|70 BPM|80 BPM|90 BPM|100 BPM|110 BPM|120 BPM|130 BPM|140 BPM|150 BPM|160 BPM|170 BPM|180 BPM|190 BPM|200 BPM'),30,words('Konstant|Dynamisch'),words('65 BPM|75 BPM|85 BPM|95 BPM|105 BPM')),premium:words('125 BPM Premium|135 BPM Premium|145 BPM Premium|155 BPM Premium|165 BPM Premium|175 BPM Premium|185 BPM Premium'),exclusive:words('210 BPM Exklusiv|220 BPM Exklusiv|240 BPM Exklusiv')},
+    scenes:{label:'Szenen',singular:'Szene',icon:'🎬',normal:catalog(words('Fußballstadion|Gaming-Zimmer|Dunkler Wald|Weihnachtsmarkt|Sommerstrand|Cyberpunk-Stadt|Piratenschiff|Wikingerhalle|Weltraumstation|Verlassene Fabrik|Konzerthalle|Nachtclub|Berglandschaft|Großstadt bei Nacht|Gewitter am Meer'),80,words('Atmosphärische|Dramatische|Epische|Filmische|Mystische|Nächtliche'),sceneSubjects),premium:catalog([],15,words('Premium'),sceneSubjects),exclusive:catalog([],5,words('Exklusive'),sceneSubjects)}
+  };
+  const slug=value=>String(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ß/g,'ss').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const clone=value=>JSON.parse(JSON.stringify(value));
+  function seed(key,groups){return TIERS.flatMap(tier=>groups[tier].map(name=>({id:`${key}-${slug(name)}`,name,active:true,tier,premium:tier==='premium',exclusive:tier==='exclusive',roles:[...ROLES]})));}
+  const defaults=Object.fromEntries(Object.entries(db).map(([key,entry])=>[key,{key,label:entry.label,singular:entry.singular,icon:entry.icon,items:seed(key,entry)}]));
+  function normalizeRole(role){const key=String(role||'user').toLowerCase().replace(/[^a-z]/g,'');return ROLES.includes(key)?key:'user';}
+  function load(){try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)),result=clone(defaults);if(saved&&typeof saved==='object')Object.keys(result).forEach(key=>{if(Array.isArray(saved[key]?.items))result[key].items=saved[key].items;});return result;}catch(_){return clone(defaults);}}
+  let data=load();const persist=()=>localStorage.setItem(STORAGE_KEY,JSON.stringify(data));const sort=items=>[...items].sort((a,b)=>a.name.localeCompare(b.name,'de',{sensitivity:'base'}));const category=key=>data[key]||null;const categories=()=>Object.values(data).map(c=>({...c,items:sort(c.items)}));const canSeeInactive=role=>MANAGER_ROLES.includes(normalizeRole(role));
+  function visibleItems(key,role='user'){const c=category(key);return c?sort(c.items.filter(item=>item.active||canSeeInactive(role))):[];}
+  function canSelect(item,role='user'){role=normalizeRole(role);if(!item.active&&!canSeeInactive(role))return false;if(!item.roles.includes(role))return false;if(item.tier==='normal')return true;if(item.tier==='premium')return role!=='user';return MANAGER_ROLES.includes(role);}
+  function counts(key,role='user'){const items=visibleItems(key,role);return Object.fromEntries(TIERS.map(tier=>[tier,items.filter(item=>item.tier===tier).length]));}
+  function validate(key,values,except){const c=category(key);if(!c)throw Error('Kategorie nicht gefunden.');if(!values.name?.trim())throw Error('Name fehlt.');if(!TIERS.includes(values.tier))throw Error('Ungültige Zugriffsstufe.');if(c.items.some(item=>item.id!==except&&item.name.localeCompare(values.name.trim(),'de',{sensitivity:'base'})===0))throw Error('Dieser Eintrag existiert bereits.');}
+  function add(key,values){validate(key,values);const c=category(key);let id=`${key}-${slug(values.name)}`,n=2;while(c.items.some(item=>item.id===id))id=`${key}-${slug(values.name)}-${n++}`;c.items.push({id,name:values.name.trim(),active:Boolean(values.active),tier:values.tier,premium:values.tier==='premium',exclusive:values.tier==='exclusive',roles:[...values.roles]});persist();return id;}
+  function update(key,id,values){validate(key,values,id);const item=category(key)?.items.find(entry=>entry.id===id);if(!item)throw Error('Eintrag nicht gefunden.');Object.assign(item,{name:values.name.trim(),active:Boolean(values.active),tier:values.tier,premium:values.tier==='premium',exclusive:values.tier==='exclusive',roles:[...values.roles]});persist();}
+  function remove(key,id){const c=category(key);if(c){c.items=c.items.filter(item=>item.id!==id);persist();}}
+  function reset(){data=clone(defaults);persist();}
+  window.SongAdmin=Object.freeze({TIERS,ROLES,ROLE_LABELS,MANAGER_ROLES,normalizeRole,categories,category,visibleItems,counts,canSeeInactive,canSelect,add,update,remove,reset});window.loadAdminData=()=>window.SongAdmin.categories();
+}());

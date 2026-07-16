@@ -7,7 +7,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Login - Song Creator Studio</title>
+  <title>Registrieren - Song Creator Studio</title>
 
   <link
     rel="stylesheet"
@@ -31,95 +31,140 @@
 
     <!-- Titel -->
 
-    <h1>Willkommen zurück</h1>
+    <h1>Registrieren</h1>
 
     <p class="subtitle">
-      Melde dich an, um deine Songs zu verwalten.
+      Erstelle dein kostenloses Konto.
     </p>
 
-    <!-- Login Karte -->
+    <!-- Registrierung -->
 
-    <div class="auth-card">
+    <div class="auth-card register-card">
 
-      <!-- Benutzername / E-Mail -->
+      <!-- Benutzername -->
 
       <div class="input-group">
 
         <label>
-          Benutzername oder E-Mail
+          Benutzername
         </label>
 
         <input
           type="text"
+          id="username"
+          placeholder="Benutzername"
+        >
+
+      </div>
+
+      <!-- E-Mail -->
+
+      <div class="input-group">
+
+        <label>
+          E-Mail
+        </label>
+
+        <input
+          type="email"
           id="email"
-          placeholder="Benutzername oder E-Mail"
+          placeholder="deine@email.de"
         >
 
       </div>
 
       <!-- Passwort -->
 
-      <div class="input-group">
+      <div class="password-row">
 
-        <label>
-          Passwort
-        </label>
+        <div class="input-group">
 
-        <div class="password-input">
+          <label>
+            Passwort
+          </label>
 
-          <input
-            type="password"
-            id="password"
-            placeholder="Passwort"
-          >
+          <div class="password-input">
 
-          <button
-            type="button"
-            class="eye-btn"
-            onclick="togglePassword('password')"
-          >
-            👁️
-          </button>
+            <input
+              type="password"
+              id="password"
+              placeholder="Passwort"
+            >
+
+            <button
+              type="button"
+              class="eye-btn"
+              onclick="togglePassword('password')"
+            >
+              👁️
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Passwort wiederholen -->
+
+        <div class="input-group">
+
+          <label>
+            Wiederholen
+          </label>
+
+          <div class="password-input">
+
+            <input
+              type="password"
+              id="password2"
+              placeholder="Wiederholen"
+            >
+
+            <button
+              type="button"
+              class="eye-btn"
+              onclick="togglePassword('password2')"
+            >
+              👁️
+            </button>
+
+          </div>
 
         </div>
 
       </div>
 
-      <!-- Angemeldet bleiben -->
+      <!-- AGB -->
 
       <div class="remember-box">
 
         <input
           type="checkbox"
-          id="remember"
+          id="agb"
         >
 
-        <label for="remember">
-          Angemeldet bleiben
+        <label for="agb">
+          Ich akzeptiere die AGB und
+          Datenschutzbestimmungen.
         </label>
 
       </div>
 
-      <!-- Login -->
+      <!-- Button -->
 
       <button
         class="main-btn"
-        onclick="validateLogin()"
+        onclick="validateRegister()"
       >
-        🔐 Anmelden
+        📝 Registrieren
       </button>
 
       <!-- Links -->
 
       <div class="login-links">
 
-        <a href="forgot-password.html">
-          Passwort vergessen?
-        </a>
-
-        <a href="register.html">
-          Noch keinen Account?
-          Jetzt registrieren
+        <a href="login.html">
+          Bereits ein Konto?
+          Jetzt anmelden
         </a>
 
       </div>
@@ -145,8 +190,6 @@
     </p>
 
   </div>
-
-  <!-- JS -->
 
   <script src="js/auth.js"></script>
 

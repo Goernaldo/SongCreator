@@ -1,8 +1,312 @@
-(function(){'use strict';
-const pick=(a,n=0)=>a.length?a[n%a.length]:'';const names=(c,k)=>c[k]||[];
-function profile(c){const s=[...names(c,'genres'),...names(c,'styles')].join(' ').toLowerCase();if(/hardstyle|rawstyle|frenchcore/.test(s))return['Hardstyle',['Spoken Intro','Build-up','Countdown','Hook','Bass Drop','Verse','Build-up 2','Final Drop','Outro']];if(/deutschrap|hip-hop|trap/.test(s))return['Deutschrap',['Intro','Verse 1','Hook','Verse 2','Bridge','Final Hook','Outro']];if(/techno|trance|house/.test(s))return['Techno',['Vocal Intro','Hook','Build-up','Drop','Break','Final Drop','Outro']];if(/schlager/.test(s))return['Schlager',['Verse 1','Pre-Chorus','Refrain','Verse 2','Refrain','Bridge','Finaler Refrain']];if(/metal|rock/.test(s))return['Rock / Metal',['Intro','Verse 1','Pre-Chorus','Chorus','Verse 2','Guitar Solo','Bridge','Final Chorus','Outro']];if(/viking|wikinger/.test(s))return['Viking',['Spoken Intro','Call and Response Choir','Verse','Great Choir','Drum Break','Final Choir','Outro']];return['Pop',['Intro','Verse 1','Pre-Chorus','Hook','Verse 2','Bridge','Final Hook','Outro']];}
-function generateStylePrompt(c){return `${[...c.moods,...c.languages,...c.themes].slice(0,5).join(' ')} ${c.genres.join(' / ')||'modern'} song with ${c.styles.join(', ')||'polished production'}, ${c.instruments.join(', ')||'layered instruments'}, ${c.vocals.join(', ')||'expressive lead vocals'}, ${c.soundEffects.join(', ')||'subtle sound design'}, ${c.tempo.join(', ')||'medium tempo'}, set in ${c.scenes.join(', ')||'a cinematic scene'}, ${c.length.toLowerCase()} arrangement, powerful hook, clear vocal roles, detailed intro and final drop.`.replace(/\s+/g,' ').trim().slice(0,1000);}
-function generateLyrics(c,v=0){let[p,parts]=profile(c);if(c.length==='Kurz')parts=parts.slice(0,6);if(c.length==='Lang')parts=[...parts.slice(0,-1),'Verse 3','Bridge Reprise','Final Hook',parts.at(-1)];const t=pick(c.themes,v)||'unsere Geschichte',m=pick(c.moods,v+1)||'Hoffnung',scene=pick(c.scenes,v)||'die Nacht',voice=c.vocals.some(x=>/duett/i.test(x))?'[Male Vocal / Female Vocal]':c.vocals.some(x=>/chor/i.test(x))?'[Lead Vocal / Choir]':'[Lead Vocal]';return `# ${c.title}\n\n${parts.map((x,i)=>`[${x}]\n${voice}\n${i%3===0?`${t} ruft uns durch ${scene},`:`Wir tragen ${m} durch die Zeit,`}\n${i%2?`jede Stimme wird zum Licht, bereit.`:`der Rhythmus hebt uns, Schritt für Schritt.`}\n${/hook|chorus|refrain|choir|drop/i.test(x)?`\n${t} – wir stehen auf!\nTonight we rise, we won't give up!`:''}`).join('\n\n')}`;}
-function generateCoverPrompt(c,v=0){return `Square 4K music cover for “${c.title}”, a ${c.genres.join(' and ')||'modern'} song about ${c.themes.join(', ')||'an unforgettable journey'}, set in ${c.scenes.join(', ')||'a cinematic environment'}, ${c.moods.join(', ')||'powerful'} atmosphere, ${v%2?'magenta and gold':'cyan and magenta'} lighting, dramatic depth, premium detailed artwork, strong central composition, title at the top, no random logos, no watermark, no misspelled text, “by GörnaldoBerlin” in the bottom-right corner.`;}
-function generateSongContent(c,v=Date.now()){return{title:c.title,stylePrompt:generateStylePrompt(c),lyrics:generateLyrics(c,v),coverPrompt:generateCoverPrompt(c,v)};}
-window.LocalSongGenerator=Object.freeze({generateSongContent,generateStylePrompt,generateLyrics,generateCoverPrompt});}());
+// =========================
+// Passwort anzeigen
+// =========================
+
+function togglePassword(inputId) {
+
+  const input =
+    document.getElementById(
+      inputId
+    );
+
+  if (!input) return;
+
+  input.type =
+    input.type === "password"
+      ? "text"
+      : "password";
+}
+
+// =========================
+// Owner Account
+// =========================
+
+const OWNER_ACCOUNT = {
+
+  username:
+    "GörnaldoBerlin",
+
+  email:
+    "owner@songcreator.local",
+
+  password:
+    "BitteSpäterÄndern123",
+
+  role:
+    "Owner",
+
+  premium:
+    true
+
+};
+
+// =========================
+// Registrierung
+// =========================
+
+function validateRegister() {
+
+  const username =
+    document.getElementById(
+      "username"
+    );
+
+  const email =
+    document.getElementById(
+      "email"
+    );
+
+  const password =
+    document.getElementById(
+      "password"
+    );
+
+  const password2 =
+    document.getElementById(
+      "password2"
+    );
+
+  const agb =
+    document.getElementById(
+      "agb"
+    );
+
+  if (
+    !username.value.trim()
+  ) {
+
+    alert(
+      "Bitte Benutzername eingeben."
+    );
+
+    return;
+  }
+
+  if (
+    !email.value.includes(
+      "@"
+    )
+  ) {
+
+    alert(
+      "Bitte gültige E-Mail eingeben."
+    );
+
+    return;
+  }
+
+  if (
+    password.value.length < 8
+  ) {
+
+    alert(
+      "Passwort mindestens 8 Zeichen."
+    );
+
+    return;
+  }
+
+  if (
+    password.value !==
+    password2.value
+  ) {
+
+    alert(
+      "Passwörter stimmen nicht überein."
+    );
+
+    return;
+  }
+
+  if (
+    !agb.checked
+  ) {
+
+    alert(
+      "Bitte AGB akzeptieren."
+    );
+
+    return;
+  }
+
+  alert(
+    "Lokale Registrierung folgt später."
+  );
+
+}
+
+// =========================
+// Login
+// =========================
+
+function validateLogin() {
+
+  const email =
+    document.getElementById(
+      "email"
+    );
+
+  const password =
+    document.getElementById(
+      "password"
+    );
+
+  if (
+    email.value.trim() === ""
+  ) {
+
+    alert(
+      "Bitte Benutzername oder E-Mail eingeben."
+    );
+
+    return;
+  }
+
+  if (
+    password.value.trim() === ""
+  ) {
+
+    alert(
+      "Bitte Passwort eingeben."
+    );
+
+    return;
+  }
+
+  // =========================
+  // Owner Login
+  // =========================
+
+  if (
+
+    (
+      email.value.trim() ===
+      OWNER_ACCOUNT.username ||
+
+      email.value.trim() ===
+      OWNER_ACCOUNT.email
+
+    )
+
+    &&
+
+    password.value ===
+    OWNER_ACCOUNT.password
+
+  ) {
+
+    localStorage.setItem(
+      "loggedIn",
+      "true"
+    );
+
+    localStorage.setItem(
+      "username",
+      OWNER_ACCOUNT.username
+    );
+
+    localStorage.setItem(
+      "email",
+      OWNER_ACCOUNT.email
+    );
+
+    localStorage.setItem(
+      "role",
+      OWNER_ACCOUNT.role
+    );
+
+    localStorage.setItem(
+      "premium",
+      "true"
+    );
+
+    alert(
+      "Willkommen zurück, Owner!"
+    );
+
+    window.location.href =
+      "index.html";
+
+    return;
+  }
+
+  alert(
+    "Benutzername oder Passwort falsch."
+  );
+
+}
+
+// =========================
+// Logout
+// =========================
+
+function logout() {
+
+  localStorage.removeItem(
+    "loggedIn"
+  );
+
+  localStorage.removeItem(
+    "username"
+  );
+
+  localStorage.removeItem(
+    "email"
+  );
+
+  localStorage.removeItem(
+    "role"
+  );
+
+  localStorage.removeItem(
+    "premium"
+  );
+
+  window.location.href =
+    "login.html";
+
+}
+
+// =========================
+// Eingeloggt?
+// =========================
+
+function isLoggedIn() {
+
+  return (
+    localStorage.getItem(
+      "loggedIn"
+    ) === "true"
+  );
+
+}
+
+// =========================
+// Passwort vergessen
+// =========================
+
+function sendResetCode() {
+
+  const email =
+    document.getElementById(
+      "resetEmail"
+    );
+
+  if (
+    !email.value.includes(
+      "@"
+    )
+  ) {
+
+    alert(
+      "Bitte gültige E-Mail eingeben."
+    );
+
+    return;
+  }
+
+  alert(
+    "Reset-Code folgt später über Supabase."
+  );
+
+}
