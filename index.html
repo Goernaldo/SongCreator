@@ -165,21 +165,19 @@
 
     </div>
 
-    <!-- Admin -->
+    <!-- Premium-Shop -->
 
     <div
-      id="adminCard"
       class="menu-card"
-      onclick="goTo('admin.html')"
-      style="display:none;"
+      onclick="goTo('shop.html')"
     >
 
       <div class="icon">
-        👑
+        💎
       </div>
 
       <div class="text">
-        Admin
+        Premium-Shop
       </div>
 
     </div>
@@ -266,20 +264,6 @@ document.addEventListener(
         )
         .innerText =
           `Rolle: ${role}`;
-
-      if (
-        role ===
-        "Owner"
-      ) {
-
-        document
-          .getElementById(
-            "adminCard"
-          )
-          .style.display =
-            "block";
-
-      }
 
     }
 

@@ -49,8 +49,7 @@
       color:#b6c2d1;
       "
     >
-      Benutzer:
-      Nicht angemeldet
+      Benutzer: <span id="moreUsername">Nicht angemeldet</span>
     </p>
 
     <p
@@ -59,8 +58,7 @@
       color:#b6c2d1;
       "
     >
-      Rolle:
-      Gast
+      Rolle: <span id="moreRole">Gast</span>
     </p>
 
     <p
@@ -69,10 +67,10 @@
       color:#b6c2d1;
       "
     >
-      Premium:
-      Nein
+      Premium: <span id="morePremium">Nein</span>
     </p>
 
+    <button class="main-btn" style="margin-top:20px;" onclick="goTo('profile.html')">👤 Profil öffnen</button>
   </div>
 
   <!-- Einstellungen -->
@@ -141,6 +139,7 @@
 
     <button
       class="main-btn"
+      onclick="goTo('shop.html')"
       style="margin-top:20px;"
     >
       💎 Premium ansehen
@@ -150,9 +149,9 @@
 
   <!-- Admin -->
 
-  <div
+  <div id="adminMenuEntry"
     class="auth-card"
-    style="margin-top:25px;"
+    style="margin-top:25px;display:none;"
   >
 
     <h2>👑 Administration</h2>
@@ -168,6 +167,7 @@
 
     <button
       class="main-btn"
+      onclick="goTo('admin.html')"
       style="margin-top:20px;"
     >
       👑 Admin-Panel
@@ -238,6 +238,17 @@
 
 <script src="js/app.js"></script>
 <script src="js/settings.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const role = getRole();
+  document.getElementById('moreUsername').textContent = getUsername();
+  document.getElementById('moreRole').textContent = role;
+  document.getElementById('morePremium').textContent = isPremium() ? 'Aktiv' : 'Nein';
+  if (['Moderator','Administrator','Superadmin','Owner'].includes(role)) {
+    document.getElementById('adminMenuEntry').style.display = 'block';
+  }
+});
+</script>
 
 </body>
 </html>
